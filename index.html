@@ -1,0 +1,44 @@
+;
+      g.setValueAtTime(0.9,t1);
+      g.linearRampToValueAtTime(0,t1+0.0005);
+    });
+  }
+
+  function loop(){
+    if(!run)return;
+    const now=ctx.currentTime;
+    while(nextFrameTime<now+1.2){ // 1.2 s önden planla
+      const date=new Date(Date.now()+ (nextFrameTime-ctx.currentTime)*1000);
+      const frame=makeFrame(date);
+      scheduleFrame(frame,nextFrameTime);
+      nextFrameTime+=1.0; // her frame 1 s
+    }
+    requestAnimationFrame(loop);
+  }
+
+  function start(){
+    if(run)return;
+    init();run=true;
+    document.getElementById("clickmsg").style.display="none";
+    loop();
+    console.log("IRIG-B SES BAŞLADI (KESİNTİSİZ)");
+  }
+
+  function stop(){
+    run=false;
+    try{osc.stop()}catch{}
+    try{ctx.close()}catch{}
+    ctx=osc=gain=null;
+  }
+
+  document.addEventListener("click",()=>{if(!run)start();});
+  document.addEventListener("touchstart",()=>{if(!run)start();});
+  document.addEventListener("keydown",e=>{
+    if(e.code==="Space"){e.preventDefault();run?stop():start();}
+  });
+  document.addEventListener("dblclick",()=>{run?stop():start();});
+})();
+</script>
+
+</body>
+</html>
